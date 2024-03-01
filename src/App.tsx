@@ -14,6 +14,9 @@ export const App = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [n, setN] = useState<number | null>(null);
   const [p, setP] = useState<number | null>(null);
+  const [connectivity, setConnectivity] = useState<number | null>(null);
+  const [centrality, setCentrality] = useState<number | null>(null);
+  const [complexity, setComplexity] = useState<number | null>(null);
   const handleChangeN = ({value}: {value: string | null}) =>
     setN(Number(value));
   const handleChangeP = ({value}: {value: string | null}) =>
@@ -34,9 +37,9 @@ export const App = () => {
       graph[link.source].push(link.target);
       graph[link.target].push(link.source);
     });
-    const connectivity = calculateConnectivity(graph);
-    const centrality = calculateCentrality(graph);
-    const complexity = calculateComplexity(graph);
+    setConnectivity(calculateConnectivity(graph));
+    setCentrality(calculateCentrality(graph));
+    setComplexity(calculateComplexity(graph));
     console.log("Связность:", connectivity);
     console.log("Индекс центральности:", centrality);
     console.log("Сложность:", complexity);
@@ -58,7 +61,8 @@ export const App = () => {
     const height = 800;
 
     const svg = d3
-      .select("body")
+      .select("div")
+      .select("div")
       .append("svg")
       .attr("width", width)
       .attr("height", height)
@@ -105,48 +109,53 @@ export const App = () => {
 
   return (
     <div className="App">
-      <Box
-        component="form"
-        sx={{
-          "& > :not(style)": {m: 1, width: "25ch"},
-        }}
-        noValidate
-        autoComplete="off"
-      >
-        <TextField
-          inputProps={{
-            min: 0,
-            max: 50,
+      <div style={{display: "flex", flexDirection: "column"}}>
+        <Box
+          component="form"
+          sx={{
+            "& > :not(style)": {m: 1, width: "25ch"},
           }}
-          label="Число узлов"
-          type="number"
-          value={n}
-          // @ts-ignore
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleChangeN(e.target)
-          }
-        />
-        <TextField
-          inputProps={{
-            min: 0,
-            max: 1,
-          }}
-          label="Вероятность от 0-1"
-          type="number"
-          value={p}
-          // @ts-ignore
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleChangeP(e.target)
-          }
-        />
-        <Button
-          variant="outlined"
-          disabled={n && p ? false : true}
-          onClick={() => create()}
+          noValidate
+          autoComplete="off"
         >
-          Создать граф
-        </Button>
-      </Box>
+          <TextField
+            inputProps={{
+              min: 0,
+              max: 50,
+            }}
+            label="Число узлов"
+            type="number"
+            value={n}
+            // @ts-ignore
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChangeN(e.target)
+            }
+          />
+          <TextField
+            inputProps={{
+              min: 0,
+              max: 1,
+            }}
+            label="Вероятность от 0-1"
+            type="number"
+            value={p}
+            // @ts-ignore
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChangeP(e.target)
+            }
+          />
+          <Button
+            variant="outlined"
+            disabled={n && p ? false : true}
+            onClick={() => create()}
+          >
+            Создать граф
+          </Button>
+        </Box>
+        <div>Связность: {connectivity}</div>
+        <div>Индекс центральности:{centrality}</div>
+        <div>Сложность: {complexity}</div>
+      </div>
     </div>
   );
 };
